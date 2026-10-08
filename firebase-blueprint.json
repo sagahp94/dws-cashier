@@ -1,0 +1,183 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Authenticated Google user profile record",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID",
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Google account display name",
+          "maxLength": 256
+        },
+        "email": {
+          "type": "string",
+          "description": "Google account email address",
+          "maxLength": 320
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Google profile avatar URL",
+          "maxLength": 2048
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of first registration",
+          "maxLength": 64
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "ISO timestamp of most recent login",
+          "maxLength": 64
+        }
+      },
+      "required": ["uid", "createdAt", "lastLoginAt"]
+    },
+    "UserDwsSync": {
+      "title": "User DWS Sync Data",
+      "description": "User specific DWS roster data synchronized across devices",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the owning Google user",
+          "maxLength": 128
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Email of the user",
+          "maxLength": 320
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update",
+          "maxLength": 64
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Device identifier that performed the sync",
+          "maxLength": 128
+        },
+        "deviceName": {
+          "type": "string",
+          "description": "Human readable device name",
+          "maxLength": 256
+        },
+        "version": {
+          "type": "string",
+          "description": "Schema version",
+          "maxLength": 32
+        },
+        "shifts": {
+          "type": "array",
+          "description": "Work shift definitions"
+        },
+        "shiftsMeta": {
+          "type": "object",
+          "description": "Shift catalog metadata"
+        },
+        "counters": {
+          "type": "array",
+          "description": "Cashier counters catalog"
+        },
+        "countersMeta": {
+          "type": "object",
+          "description": "Counter catalog metadata"
+        },
+        "employees": {
+          "type": "array",
+          "description": "Employee catalog"
+        },
+        "employeesMeta": {
+          "type": "object",
+          "description": "Employee catalog metadata"
+        },
+        "weeklySchedules": {
+          "type": "object",
+          "description": "Weekly schedule records by monday date"
+        },
+        "assignments": {
+          "type": "object",
+          "description": "Daily DWS counter assignments by date"
+        },
+        "history": {
+          "type": "array",
+          "description": "Recent operation and assignment history"
+        },
+        "assignmentRules": {
+          "type": "object",
+          "description": "Fixed and priority assignment rules"
+        },
+        "excludedEmployees": {
+          "type": "array",
+          "description": "List of excluded employee keys"
+        },
+        "swapRequests": {
+          "type": "array",
+          "description": "Pending and resolved shift swap requests"
+        }
+      },
+      "required": ["userId", "updatedAt"]
+    },
+    "AppCreatorInfo": {
+      "title": "App Creator Info",
+      "description": "Application creator and metadata information parsed from .txt config file",
+      "type": "object",
+      "properties": {
+        "rawText": {
+          "type": "string",
+          "description": "Raw text content of the uploaded info file",
+          "maxLength": 100000
+        },
+        "parsedFields": {
+          "type": "object",
+          "description": "Parsed key-value fields from the text file"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last info update",
+          "maxLength": 64
+        },
+        "updatedByUid": {
+          "type": "string",
+          "description": "UID of the project owner who uploaded the info",
+          "maxLength": 128
+        },
+        "updatedByEmail": {
+          "type": "string",
+          "description": "Email of the project owner who uploaded the info",
+          "maxLength": 320
+        },
+        "version": {
+          "type": "string",
+          "description": "Version identifier of the metadata format",
+          "maxLength": 32
+        }
+      },
+      "required": ["updatedAt", "updatedByUid"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document keyed by Firebase Auth UID"
+    },
+    "/users/{userId}/data/{docId}": {
+      "schema": "UserDwsSync",
+      "description": "Primary collection storing application data documents owned strictly by the authenticated user"
+    },
+    "/users/{userId}/dwsData/{docId}": {
+      "schema": "UserDwsSync",
+      "description": "Legacy collection storing DWS sync documents owned strictly by the authenticated user"
+    },
+    "/app_metadata/{docId}": {
+      "schema": "AppCreatorInfo",
+      "description": "Shared application metadata and creator information document readable by all authenticated users and modifiable only by project owner"
+    }
+  }
+}

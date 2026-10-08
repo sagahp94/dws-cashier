@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny catch-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isProjectOwner() {
+      return isSignedIn() && (
+        request.auth.uid == 'oL66Iw6DiLMPiq48Qx60c7Jwq123' ||
+        ('email' in request.auth.token && request.auth.token.email == 'lecongthanh299@gmail.com') ||
+        request.auth.token.email == 'lecongthanh299@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'createdAt', 'lastLoginAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'email', 'photoURL', 'createdAt', 'lastLoginAt']) &&
+        data.uid is string && data.uid == userId && data.uid.size() <= 128 &&
+        (!('displayName' in data) || data.displayName == null || (data.displayName is string && data.displayName.size() <= 256)) &&
+        (!('email' in data) || data.email == null || (data.email is string && data.email.size() <= 320)) &&
+        (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 2048)) &&
+        data.createdAt is string && data.createdAt.size() <= 64 &&
+        data.lastLoginAt is string && data.lastLoginAt.size() <= 64;
+    }
+
+    function isValidUserDwsSync(data, userId) {
+      return data.keys().hasAll(['userId', 'updatedAt']) &&
+        data.userId is string && data.userId == userId && data.userId.size() <= 128 &&
+        data.updatedAt is string && data.updatedAt.size() <= 64 &&
+        (!('userEmail' in data) || data.userEmail == null || (data.userEmail is string && data.userEmail.size() <= 320)) &&
+        (!('deviceId' in data) || data.deviceId == null || (data.deviceId is string && data.deviceId.size() <= 128)) &&
+        (!('deviceName' in data) || data.deviceName == null || (data.deviceName is string && data.deviceName.size() <= 256)) &&
+        (!('version' in data) || data.version == null || (data.version is string && data.version.size() <= 32));
+    }
+
+    function isValidAppCreatorInfo(data) {
+      return data.keys().hasAll(['updatedAt', 'updatedByUid']) &&
+        data.updatedAt is string && data.updatedAt.size() <= 64 &&
+        data.updatedByUid is string && data.updatedByUid.size() <= 128 &&
+        (!('rawText' in data) || data.rawText == null || (data.rawText is string && data.rawText.size() <= 100000)) &&
+        (!('updatedByEmail' in data) || data.updatedByEmail == null || (data.updatedByEmail is string && data.updatedByEmail.size() <= 320)) &&
+        (!('version' in data) || data.version == null || (data.version is string && data.version.size() <= 32));
+    }
+
+    // 2. User Profile Document: users/{userId}
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow create, update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming(), userId);
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // 3. Primary Application Data Collection: users/{userId}/data/{docId}
+      match /data/{docId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+        allow list: if isOwner(userId) && resource.data.userId == request.auth.uid;
+        allow create, update: if isOwner(userId) && isValidId(userId) && isValidId(docId) && isValidUserDwsSync(incoming(), userId);
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+      }
+
+      // 4. Legacy Application Data Collection: users/{userId}/dwsData/{docId}
+      match /dwsData/{docId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+        allow list: if isOwner(userId) && resource.data.userId == request.auth.uid;
+        allow create, update: if isOwner(userId) && isValidId(userId) && isValidId(docId) && isValidUserDwsSync(incoming(), userId);
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+      }
+    }
+
+    // 5. Shared App Metadata Collection: app_metadata/{docId}
+    match /app_metadata/{docId} {
+      allow get: if isSignedIn() && isValidId(docId);
+      allow list: if isSignedIn();
+      allow create, update: if isProjectOwner() && isValidId(docId) && isValidAppCreatorInfo(incoming());
+      allow delete: if isProjectOwner() && isValidId(docId);
+    }
+  }
+}
