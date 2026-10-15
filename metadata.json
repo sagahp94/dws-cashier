@@ -1,0 +1,6 @@
+{
+  "name": "DWS Cashier Manager",
+  "description": "Hệ thống quản lý và phân quầy DWS chuyên nghiệp cho bộ phận Thu ngân AEON, hỗ trợ import Excel, phân ca sáng/chiều, xem trước và xuất file PDF in A4, xuất file Excel (*.xlsx) DWS ngày và tuần.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

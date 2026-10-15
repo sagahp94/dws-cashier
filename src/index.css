@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+:root {
+  --neu-base: #f8fafc;
+  --neu-surface: #ffffff;
+  --neu-border: #e2e8f0;
+  --neu-border-subtle: #f1f5f9;
+  --neu-accent: #0f766e;
+  --neu-accent-hover: #0d9488;
+}
+
+html {
+  zoom: 0.85;
+}
+
+@supports not (zoom: 0.85) {
+  html {
+    font-size: 85%;
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--neu-base);
+    color: #0f172a;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Tabular numerals for all numbers in tables and metrics */
+  table,
+  .tabular-nums,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ==========================================================================
+   MODERN MINIMALISM DESIGN SYSTEM TOKENS & UTILITIES
+   Preserves existing class names & brand color palette (#0f766e, slate, etc.)
+   ========================================================================== */
+
+/* 1. Large Surface Panels (Single-Level Clean Elevation) */
+.neu-panel,
+.glass-panel {
+  background: var(--neu-surface);
+  border: 1px solid var(--neu-border);
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
+  border-radius: 0.875rem;
+}
+
+/* 2. Standard Cards */
+.neu-card,
+.glass-card {
+  background: var(--neu-surface);
+  border: 1px solid var(--neu-border);
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.02);
+  border-radius: 0.75rem;
+  transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* 3. Interactive Cards */
+.neu-card-interactive,
+.glass-card-interactive {
+  background: var(--neu-surface);
+  border: 1px solid var(--neu-border);
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.02);
+  border-radius: 0.75rem;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neu-card-interactive:hover,
+.glass-card-interactive:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.neu-card-interactive:active,
+.glass-card-interactive:active {
+  background: #f8fafc;
+  transform: translateY(0);
+}
+
+/* 4. Subtle Recessed Containers & Input Fields */
+.neu-inset,
+.glass-input {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  border-radius: 0.625rem;
+  color: #0f172a;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.neu-inset:focus,
+.glass-input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: var(--neu-accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+/* 5. Primary Minimalist Action Button */
+.neu-button-primary,
+.glass-button-primary {
+  background: var(--neu-accent);
+  color: #ffffff;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 2px 0 rgba(15, 118, 110, 0.18);
+  border-radius: 0.625rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.neu-button-primary:hover,
+.glass-button-primary:hover {
+  background: var(--neu-accent-hover);
+  box-shadow: 0 2px 6px 0 rgba(15, 118, 110, 0.25);
+}
+
+.neu-button-primary:active,
+.glass-button-primary:active {
+  background: #115e59;
+  transform: translateY(0);
+}
+
+/* 6. Secondary Clean Outline Button */
+.neu-button-secondary,
+.glass-button-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.02);
+  border-radius: 0.625rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.neu-button-secondary:hover,
+.glass-button-secondary:hover {
+  color: #0f766e;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.neu-button-secondary:active,
+.glass-button-secondary:active {
+  background: #f1f5f9;
+}
+
+/* 7. Minimal Badges & Pills */
+.neu-pill,
+.glass-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  border-radius: 0.375rem;
+}
+
+.neu-pill-inset {
+  background: #f1f5f9;
+  border: 1px solid transparent;
+  box-shadow: none;
+  border-radius: 0.375rem;
+}
+
+/* 8. Flat Surface Accents */
+.neu-convex,
+.neu-concave {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+/* 9. Minimal Header & Sidebar */
+.neu-header {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+.neu-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: none;
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print Stylesheet preservation */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 6mm;
+  }
+
+  html {
+    zoom: 1 !important;
+    font-size: 100% !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header,
+  aside,
+  nav,
+  .no-print,
+  #btn-back-to-edit,
+  #btn-print-dws,
+  #btn-download-pdf,
+  .ambient-glow {
+    display: none !important;
+  }
+
+  .print-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 285mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+}
+
+
+
